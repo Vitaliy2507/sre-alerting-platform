@@ -1,5 +1,3 @@
-mkdir -p scripts
-cat > scripts/set-webhook.sh << 'EOF'
 #!/bin/bash
 WEBHOOK_URL=$1
 BOT_TOKEN=$2
