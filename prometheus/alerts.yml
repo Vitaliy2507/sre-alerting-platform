@@ -1,0 +1,8 @@
+groups:
+  - name: example
+    rules:
+      - alert: AppDown
+        expr: up{job="landing"} == 0
+        for: 30s
+        annotations:
+          summary: "App is down"

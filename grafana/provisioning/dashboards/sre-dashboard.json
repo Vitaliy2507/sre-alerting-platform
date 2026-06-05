@@ -1,0 +1,84 @@
+{
+  "title": "SRE Dashboard - RED & USE",
+  "tags": ["sre", "red", "use"],
+  "timezone": "browser",
+  "refresh": "10s",
+  "panels": [
+    {
+      "title": "📈 Requests Per Second (Rate)",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "sum(rate(app_visits_total[1m]))",
+          "legendFormat": "RPS"
+        }
+      ],
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 0 },
+      "description": "RED: количество запросов в секунду"
+    },
+    {
+      "title": "❌ Error Rate",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "sum(rate(http_errors_total[1m]))",
+          "legendFormat": "Errors/sec"
+        }
+      ],
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 0 },
+      "description": "RED: количество ошибок в секунду"
+    },
+    {
+      "title": "⏱️ P99 Latency",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.99, sum(rate(app_request_duration_seconds_bucket[1m])) by (le))",
+          "legendFormat": "P99"
+        }
+      ],
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 0 },
+      "description": "RED: 99-й перцентиль задержки"
+    },
+    {
+      "title": "🖥️ CPU Utilization (USE)",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "100 - (avg(node_cpu_seconds_total{mode='idle'}) by (instance) * 100)",
+          "legendFormat": "CPU used %"
+        }
+      ],
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 8 },
+      "description": "USE: загрузка CPU"
+    },
+    {
+      "title": "💾 Memory Utilization (USE)",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100",
+          "legendFormat": "Memory used %"
+        }
+      ],
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 8 },
+      "description": "USE: использование памяти"
+    },
+    {
+      "title": "🌐 Network Traffic (USE)",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "sum(node_network_receive_bytes_total{device!='lo'})",
+          "legendFormat": "RX"
+        },
+        {
+          "expr": "sum(node_network_transmit_bytes_total{device!='lo'})",
+          "legendFormat": "TX"
+        }
+      ],
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 8 },
+      "description": "USE: сетевой трафик"
+    }
+  ]
+}

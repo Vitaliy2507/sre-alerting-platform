@@ -1,0 +1,24 @@
+# Secrets
+.env
+*.key
+*.pem
+
+# n8n data
+n8n_data/
+*.sqlite
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Temporary
+*.tmp
+*.swp
