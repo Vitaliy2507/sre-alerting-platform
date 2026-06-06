@@ -8,5 +8,5 @@ route:
 receivers:
   - name: 'telegram'
     webhook_configs:
-      - url: 'http://n8n:5678/webhook/36549456-32e6-48dd-b265-1f47771d00e7'
+      - url: '${N8N_WEBHOOK_URL}'
         send_resolved: true
