@@ -2,7 +2,7 @@ import os
 import time
 import requests
 from dotenv import load_dotenv
-from flask import Flask, g, request
+from flask import Flask, g, request, abort
 from prometheus_client import Counter, generate_latest, REGISTRY, Histogram
 
 # OpenTelemetry
@@ -14,6 +14,8 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.sdk.resources import SERVICE_NAME, Resource
 
+load_dotenv()
+
 app = Flask(__name__)
 
 # ---------- OpenTelemetry Tracing ----------
@@ -24,17 +26,19 @@ otlp_exporter = OTLPSpanExporter(endpoint="http://jaeger:4318/v1/traces")
 span_processor = BatchSpanProcessor(otlp_exporter)
 trace.get_tracer_provider().add_span_processor(span_processor)
 
-# Автоинструментация Flask и requests
 FlaskInstrumentor().instrument_app(app)
 RequestsInstrumentor().instrument()
 
-# ---------- Prometheus метрики ----------
+# ---------- Prometheus metrics ----------
 VISITS = Counter('app_visits_total', 'Total number of visits')
 REQUEST_TIME = Histogram(
-    'app_request_duration_seconds', 
+    'app_request_duration_seconds',
     'Request duration',
     labelnames=['method', 'endpoint']
 )
+
+# Internal/loopback IPs allowed to scrape /metrics
+METRICS_ALLOWED_HOSTS = {'127.0.0.1', '::1', 'prometheus'}
 
 @app.before_request
 def before_request():
@@ -53,9 +57,10 @@ def after_request(response):
 
 @app.route('/metrics')
 def metrics():
+    client_ip = request.remote_addr
+    if client_ip not in METRICS_ALLOWED_HOSTS:
+        abort(403)
     return generate_latest(REGISTRY), 200, {'Content-Type': 'text/plain'}
-
-load_dotenv()
 
 @app.route('/')
 def hello_world():
@@ -71,9 +76,5 @@ def get_version():
 
 @app.route('/outbound')
 def outbound():
-    # Этот вызов автоматически создаст span благодаря RequestsInstrumentor
     requests.get("https://httpbin.org/status/200")
     return "Outbound call done"
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
