@@ -8,11 +8,12 @@ Prometheus + Alertmanager + n8n + Claude API + Telegram Bot.
 2. Copy `.env.example` to `.env` and fill your tokens:
    - `TELEGRAM_BOT_TOKEN` - from @BotFather
    - `CLAUDE_API_KEY` - from proxyapi.ru
-3. Start the stack: `docker-compose up -d`
-4. Make scripts executable: `chmod +x scripts/set-webhook.sh scripts/send-test-alert.sh`
-5. Run ngrok: `ngrok http 5678`
-6. Setup Telegram webhook: `./scripts/set-webhook.sh https://your-ngrok-url.ngrok-free.dev YOUR_BOT_TOKEN`
-7. Send test alert: `./scripts/send-test-alert.sh https://your-ngrok-url.ngrok-free.dev`
+3. alertmanager/alertmanager.yml - insert your n8n url instead of INSERT_N8N_WEBHOOK_URL_HERE  
+4. Start the stack: `docker-compose up -d`
+5. Make scripts executable: `chmod +x scripts/set-webhook.sh scripts/send-test-alert.sh`
+6. Run ngrok: `ngrok http 5678`
+7. Setup Telegram webhook: `./scripts/set-webhook.sh https://your-ngrok-url.ngrok-free.dev YOUR_BOT_TOKEN`
+8. Send test alert: `./scripts/send-test-alert.sh https://your-ngrok-url.ngrok-free.dev`
 
 ## Workflows
 
